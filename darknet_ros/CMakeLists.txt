@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.8.12)
 project(darknet_ros)
 
 # Set c++11 cmake flags
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -mcmodel=large ${CMAKE_CXX_FLAGS}")
+
+
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
 # Define path of darknet folder here.
 find_path(DARKNET_PATH
@@ -32,6 +36,16 @@ if (CUDA_FOUND)
 else()
   list(APPEND LIBRARIES "m")
 endif()
+
+find_package(restclient-cpp REQUIRED)
+#find_package(jsoncpp REQUIRED)
+
+include_directories(${LIBRESTCLIENT_CPP_INCLUDE_DIRS})
+#include_directories(${LIBJSONCPP_INCLUDE_DIRS})
+
+#find JSON
+
+
 
 # Find X11
 MESSAGE ( STATUS "Searching for X11..." )
@@ -77,6 +91,7 @@ catkin_package(
     image_transport
   DEPENDS
     Boost
+    restclient-cpp
 )
 
 include_directories(
@@ -145,10 +160,13 @@ if (CUDA_FOUND)
     cudart
     cublas
     curand
+
     ${Boost_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
+    ${LIBRESTCLIENT_CPP_LIBRARIES}
+    #${LIBJSONCPP_LIBRARIES}
   )
 
   cuda_add_executable(${PROJECT_NAME}
@@ -199,10 +217,13 @@ else()
     m
     pthread
     stdc++
+
     ${Boost_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
+    ${LIBRESTCLIENT_CPP_LIBRARIES}
+          #${LIBJSONCPP_LIBRARIES}
   )
 
   add_executable(${PROJECT_NAME}
@@ -276,5 +297,8 @@ if(CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}_object_detection-test
     ${catkin_LIBRARIES}
+    ${LIBRESTCLIENT_CPP_LIBRARIES}
+         # ${LIBJSONCPP_LIBRARIES}
+
   )
 endif()

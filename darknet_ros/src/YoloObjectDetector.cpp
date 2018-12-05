@@ -6,8 +6,78 @@
  *   Institute: ETH Zurich, Robotic Systems Lab
  */
 
+//lib for Ros pblish
+
+#include "ros/ros.h"
+// %EndTag(ROS_HEADER)%
+// %Tag(MSG_HEADER)%
+#include "std_msgs/String.h"
+// %EndTag(MSG_HEADER)%
+
+#include <sstream>
+
+
+
+// for Json
+
+
+///Trying to make darknet fast again : sudo apt install nvidia-cuda-toolkit nvidia-cuda-dev
+
+
+//2. try
+
+
+
+
+/* 1st Try
+/// jONAS ADDED THOSE - directing directly to files
+
+
+
+using namespace web::http;
+using namespace web::http::client;
+
+ //// JOnas : sudo apt-get install libcpprest-dev
+ //sudo apt-get install g++ git libboost-atomic-dev libboost-thread-dev libboost-system-dev libboost-date-time-dev libboost-regex-dev libboost-filesystem-dev libboost-random-dev libboost-chrono-dev libboost-serialization-dev libwebsocketpp-dev openssl libssl-dev ninja-build
+ //git clone https://github.com/Microsoft/cpprestsdk.git casablanca
+//cd casablanca
+//mkdir build.debug
+//cd build.debug
+//cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug
+//ninja
+
+#include </usr/include/cpprest/filestream.h>
+
+
+
+//3rd try
+using namespace utility;                    // Common utilities like string conversions
+using namespace web;                        // Common features like URIs.
+using namespace web::http;                  // Common HTTP functionality
+using namespace web::http::client;          // HTTP client features
+using namespace concurrency::streams;       // Asynchronous streams
+
+//
+
+
+*/
+
+
+
+
+
+#include <iostream>
+
+#include "restclient-cpp/restclient.h"
+#include "restclient-cpp/connection.h"
+
+
+
+
+
+
 // yolo object detector
-#include "darknet_ros/YoloObjectDetector.hpp"
+#include "darknet_ros/YoloObjectDetector.h"
 
 // Check for xServer
 #include <X11/Xlib.h>
@@ -160,6 +230,10 @@ void YoloObjectDetector::init()
   objectPublisher_ = nodeHandle_.advertise<std_msgs::Int8>(objectDetectorTopicName,
                                                            objectDetectorQueueSize,
                                                            objectDetectorLatch);
+/// Jonas added/ changed line
+    JonasObjektspamer_pub_ = nodeHandle_.advertise<std_msgs::String>("JonasObjektspamer", 1000);
+///
+
   boundingBoxesPublisher_ = nodeHandle_.advertise<darknet_ros_msgs::BoundingBoxes>(
       boundingBoxesTopicName, boundingBoxesQueueSize, boundingBoxesLatch);
   detectionImagePublisher_ = nodeHandle_.advertise<sensor_msgs::Image>(detectionImageTopicName,
@@ -349,6 +423,8 @@ void *YoloObjectDetector::detectInThread()
   image display = buff_[(buffIndex_+2) % 3];
   draw_detections(display, dets, nboxes, demoThresh_, demoNames_, demoAlphabet_, demoClasses_);
 
+
+
   // extract the bounding boxes and send them to ROS
   int i, j;
   int count = 0;
@@ -369,6 +445,60 @@ void *YoloObjectDetector::detectInThread()
 
     // iterate through possible boxes and collect the bounding boxes
     for (j = 0; j < demoClasses_; ++j) {
+
+
+        // If wahrscheinlichkeit for detection is higher then defined border wahrscheinlichkeit then print name
+if (dets[i].prob[j] > demoThresh_){
+
+    std::cout<< demoNames_[j] <<std::endl;
+
+
+    // trying to implement ros publisher
+
+//ros::init(argc, argv, "talker");
+//ros::NodeHandle n;
+
+//    ros::Rate loop_rate(10);
+    std_msgs::String msg;
+
+    std::stringstream ss;
+    ss << demoNames_[j];
+    msg.data = ss.str();
+    JonasObjektspamer_pub_.publish(msg);
+
+    std::cout << "####################################################################################" << std::endl;
+    std::string adre ="http://api.conceptnet.io/c/en/" + ss.str();
+
+
+    RestClient::init();
+    RestClient::Connection* conn = new RestClient::Connection(adre);
+    RestClient::HeaderFields headers;
+    headers["Accept"] = "application/json";
+    conn->SetHeaders(headers);
+
+    RestClient::Response r = conn->get("");
+
+
+
+       //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
+   std::cout << r.body << std::endl;
+
+   /*
+       RestClient::Connection* conn = new RestClient::Connection("http://api.conceptnet.io/c/en/keyboard");
+       RestClient::HeaderFields headers;
+       headers["Accept"] = "application/json";
+       conn->SetHeaders(headers);
+       RestClient::Response r = conn->get("/get");
+   */
+
+
+
+
+
+
+//printf("%s: %.0f%%\n  %d  ", demoNames_[j], dets[i].prob[j]*100, nboxes);
+}
+
       if (dets[i].prob[j]) {
         float x_center = (xmin + xmax) / 2;
         float y_center = (ymin + ymax) / 2;
@@ -404,7 +534,17 @@ void *YoloObjectDetector::detectInThread()
   return 0;
 }
 
-void *YoloObjectDetector::fetchInThread()
+
+
+
+
+
+
+
+
+
+
+    void *YoloObjectDetector::fetchInThread()
 {
   IplImageWithHeader_ imageAndHeader = getIplImageWithHeader();
   IplImage* ROS_img = imageAndHeader.image;
@@ -438,6 +578,7 @@ void *YoloObjectDetector::displayInThread(void *ptr)
       demoHier_ -= .02;
       if(demoHier_ <= .0) demoHier_ = .0;
   }
+
   return 0;
 }
 
@@ -542,6 +683,7 @@ void YoloObjectDetector::yolo()
       publishInThread();
     } else {
       char name[256];
+
       sprintf(name, "%s_%08d", demoPrefix_, count);
       save_image(buff_[(buffIndex_ + 1) % 3], name);
     }
@@ -582,6 +724,10 @@ void *YoloObjectDetector::publishInThread()
   if (!publishDetectionImage(cv::Mat(cvImage))) {
     ROS_DEBUG("Detection image has not been broadcasted.");
   }
+
+
+
+
 
   // Publish bounding boxes and detection result.
   int num = roiBoxes_[0].num;
@@ -631,6 +777,7 @@ void *YoloObjectDetector::publishInThread()
   if (isCheckingForObjects()) {
     ROS_DEBUG("[YoloObjectDetector] check for objects in image.");
     darknet_ros_msgs::CheckForObjectsResult objectsActionResult;
+
     objectsActionResult.id = buffId_[0];
     objectsActionResult.bounding_boxes = boundingBoxesResults_;
     checkForObjectsActionServer_->setSucceeded(objectsActionResult, "Send bounding boxes.");
@@ -640,6 +787,9 @@ void *YoloObjectDetector::publishInThread()
     rosBoxes_[i].clear();
     rosBoxCounter_[i] = 0;
   }
+
+
+
 
   return 0;
 }
