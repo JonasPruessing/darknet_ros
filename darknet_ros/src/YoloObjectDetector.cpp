@@ -24,6 +24,15 @@
 ///Trying to make darknet fast again : sudo apt install nvidia-cuda-toolkit nvidia-cuda-dev
 
 
+#include <stdio.h>
+#include <jsoncpp/json/json.h>
+#include <jsoncpp/json/reader.h>
+#include <jsoncpp/json/writer.h>
+#include <jsoncpp/json/value.h>
+#include <string>
+
+
+
 //2. try
 
 
@@ -484,7 +493,28 @@ if (dets[i].prob[j] > demoThresh_){
 
 
         //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
-    std::cout << r.body << std::endl;
+   // std::cout << r.body << std::endl;
+
+
+
+
+
+    Json::Value root;
+    Json::Reader reader;
+    bool parsingSuccessful = reader.parse( r.body, root );     //parse process
+    if ( !parsingSuccessful )
+    {
+        std::cout  << "Failed to parse"
+                   << reader.getFormattedErrorMessages();
+        return 0;
+    }
+    // std::cout << root << std::endl;
+    std::cout << root.@id["/a/[/r/AtLocation/,/c/en/keyboard/,/c/en/office/]"]<< std::endl;
+
+
+
+
+
 
     /*
         RestClient::Connection* conn = new RestClient::Connection("http://api.conceptnet.io/c/en/keyboard");

@@ -38,7 +38,7 @@ else()
 endif()
 
 #
-#find_package(jsoncpp REQUIRED)
+find_package(jsoncpp REQUIRED)
 find_package(restclient-cpp REQUIRED)
 include_directories(${LIBRESTCLIENT_CPP_INCLUDE_DIRS})
 #include_directories(${LIBJSONCPP_INCLUDE_DIRS})
@@ -88,12 +88,13 @@ catkin_package(
     actionlib
     rospy
     std_msgs
-
+    
     darknet_ros_msgs
     image_transport
   DEPENDS
     Boost
     restclient-cpp
+    jsoncpp
 )
 
 include_directories(
@@ -162,7 +163,7 @@ if (CUDA_FOUND)
     cudart
     cublas
     curand
-
+    jsoncpp
     ${Boost_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${catkin_LIBRARIES}
@@ -219,7 +220,7 @@ else()
     m
     pthread
     stdc++
-
+    jsoncpp
     ${Boost_LIBRARIES}
     ${OpenCV_LIBRARIES}
     ${catkin_LIBRARIES}
