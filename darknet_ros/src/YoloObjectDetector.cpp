@@ -466,30 +466,33 @@ if (dets[i].prob[j] > demoThresh_){
     msg.data = ss.str();
     JonasObjektspamer_pub_.publish(msg);
 
-    std::cout << "####################################################################################" << std::endl;
+    std::cout << "#######################+############################+#################################" << std::endl;
     std::string adre ="http://api.conceptnet.io/c/en/" + ss.str();
 
 
-    RestClient::init();
-    RestClient::Connection* conn = new RestClient::Connection(adre);
-    RestClient::HeaderFields headers;
-    headers["Accept"] = "application/json";
-    conn->SetHeaders(headers);
-
-    RestClient::Response r = conn->get("");
+     RestClient::init();
 
 
 
-       //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
-   std::cout << r.body << std::endl;
+     RestClient::Connection* conn = new RestClient::Connection(adre);
+     RestClient::HeaderFields headers;
+     headers["Accept"] = "application/json";
+     conn->SetHeaders(headers);
 
-   /*
-       RestClient::Connection* conn = new RestClient::Connection("http://api.conceptnet.io/c/en/keyboard");
-       RestClient::HeaderFields headers;
-       headers["Accept"] = "application/json";
-       conn->SetHeaders(headers);
-       RestClient::Response r = conn->get("/get");
-   */
+     RestClient::Response r = conn->get("");
+
+
+
+        //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
+    std::cout << r.body << std::endl;
+
+    /*
+        RestClient::Connection* conn = new RestClient::Connection("http://api.conceptnet.io/c/en/keyboard");
+        RestClient::HeaderFields headers;
+        headers["Accept"] = "application/json";
+        conn->SetHeaders(headers);
+        RestClient::Response r = conn->get("/get");
+    */
 
 
 

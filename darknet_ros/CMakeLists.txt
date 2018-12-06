@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.8.12)
 project(darknet_ros)
 
 # Set c++11 cmake flags
-set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -mcmodel=large ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/darknet_ros/darknet_ros/cmake_modules/")
 
 # Define path of darknet folder here.
 find_path(DARKNET_PATH
@@ -37,9 +37,9 @@ else()
   list(APPEND LIBRARIES "m")
 endif()
 
-find_package(restclient-cpp REQUIRED)
+#
 #find_package(jsoncpp REQUIRED)
-
+find_package(restclient-cpp REQUIRED)
 include_directories(${LIBRESTCLIENT_CPP_INCLUDE_DIRS})
 #include_directories(${LIBJSONCPP_INCLUDE_DIRS})
 
@@ -70,6 +70,7 @@ find_package(catkin REQUIRED
     actionlib
     darknet_ros_msgs
     image_transport
+
 )
 
 # Enable OPENCV in darknet
@@ -87,6 +88,7 @@ catkin_package(
     actionlib
     rospy
     std_msgs
+
     darknet_ros_msgs
     image_transport
   DEPENDS
