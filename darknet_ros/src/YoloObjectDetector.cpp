@@ -476,7 +476,7 @@ if (dets[i].prob[j] > demoThresh_){
     JonasObjektspamer_pub_.publish(msg);
 
     std::cout << "#######################+############################+#################################" << std::endl;
-    std::string adre ="http://api.conceptnet.io/c/en/" + ss.str();
+    std::string adre ="http://api.conceptnet.io/c/en/" + ss.str() + "?offset=0&limit=100";
 
 
      RestClient::init();
@@ -495,9 +495,9 @@ if (dets[i].prob[j] > demoThresh_){
         //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
    // std::cout << r.body << std::endl;
 
+//Added reading JsonInformation:
 
-
-
+    std::string startid ="/c/en/" + ss.str();
 
     Json::Value root;
     Json::Reader reader;
@@ -508,8 +508,18 @@ if (dets[i].prob[j] > demoThresh_){
                    << reader.getFormattedErrorMessages();
         return 0;
     }
-    // std::cout << root << std::endl;
-    std::cout << root.@id["/a/[/r/AtLocation/,/c/en/keyboard/,/c/en/office/]"]<< std::endl;
+    std::cout << root["edges"].size() << std::endl;
+
+    for (int i = 0; i < root["edges"].size(); i++){
+
+        if (root["edges"][i]["rel"]["label"] == "AtLocation" && root["edges"][i]["start"]["@id"] == startid) {
+            std::cout << root["edges"][i]["end"]["label"] << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
+        }
+    }
+
+
+
+
 
 
 
