@@ -16,6 +16,13 @@
 
 #include <sstream>
 
+// for operaiting with String Pointers
+
+#include <cstring>
+
+#include<stdio.h>
+#include<string.h>
+
 
 
 // for Json
@@ -407,6 +414,15 @@ detection *YoloObjectDetector::avgPredictions(network *net, int *nboxes)
   return dets;
 }
 
+
+// structur for detected rooms
+    struct Room
+    {
+        char name[30];
+        int weight;
+
+    };
+
 void *YoloObjectDetector::detectInThread()
 {
   running_ = 1;
@@ -508,12 +524,83 @@ if (dets[i].prob[j] > demoThresh_){
                    << reader.getFormattedErrorMessages();
         return 0;
     }
-    std::cout << root["edges"].size() << std::endl;
+    //std::cout << root["edges"].size() << std::endl;
 
     for (int i = 0; i < root["edges"].size(); i++){
 
         if (root["edges"][i]["rel"]["label"] == "AtLocation" && root["edges"][i]["start"]["@id"] == startid) {
-            std::cout << root["edges"][i]["end"]["label"] << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
+
+          //  std_msgs::String location;
+
+
+
+
+         //   std::string someString = root["edges"][i]["end"]["term"];
+
+
+           // char otherString[6]; // note 6, not 5, there's one there for the null terminator
+
+
+           // strncpy(otherString, someString, 5);
+          //  otherString[5] = '\0'; // place the null terminator
+
+
+            Json::FastWriter fastWriter;
+            std::string output = fastWriter.write(root["edges"][i]["end"]["term"]);
+
+
+         //   const string value1 = root["edges"][i]["end"]["term"];
+           // string result1 = value1.Right(3);
+
+           // char* Locationterm = Location;
+             //      char* pterm = Locationterm;
+               //     Locationterm = pterm - 6;
+
+
+
+
+            std::string location = output;
+
+            // cutting stuff away
+
+            location = output.substr(7);
+            location[location.size()-2] = '\0';
+            std::cout << "Ort: " << location << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
+
+/*
+            struct Room location;
+            strcpy(location.name, location);
+            location.weight = root["edges"][i]["weight"];
+
+
+
+
+
+
+
+
+
+
+            for (int i = 0; i < output.size(); i++) {
+            if (i > 6) {
+                location[i-5] = output[i];
+            }
+
+            }
+
+
+
+            std::string str2 = output.substr (3,5);     // "think"
+
+            std::size_t pos = str.find("live");      // position of "live" in str
+
+            std::string str3 = str.substr (pos);     // get from "live" to the end
+
+            std::cout << str2 << ' ' << str3 << '\n';
+
+            std::cout << location << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
+
+            */
         }
     }
 
