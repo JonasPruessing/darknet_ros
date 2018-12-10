@@ -8,6 +8,10 @@
 
 #pragma once
 
+extern int roomindex = 0;
+extern    char roomname[100][35];
+extern    int roomweight[100];
+
 // c++
 #include <math.h>
 #include <string>

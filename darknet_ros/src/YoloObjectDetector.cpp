@@ -423,6 +423,12 @@ detection *YoloObjectDetector::avgPredictions(network *net, int *nboxes)
 
     };
 
+//arrays for roomlist
+   // char roomname[100][35];
+   // int roomweight[100];
+
+
+
 void *YoloObjectDetector::detectInThread()
 {
   running_ = 1;
@@ -557,15 +563,51 @@ if (dets[i].prob[j] > demoThresh_){
                //     Locationterm = pterm - 6;
 
 
-
+// trying to creat a List with two column
 
             std::string location = output;
 
             // cutting stuff away
-
+            char roomnameholder[35];
             location = output.substr(7);
             location[location.size()-2] = '\0';
             std::cout << "Ort: " << location << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
+            strcpy(roomnameholder, location);
+
+
+            for (int i = 0; i < 100; i++) {
+
+              if (roomname[i] = roomnameholder)
+              {
+                roomweight[i] = roomweight[i] + root["edges"][i]["weight"]
+              } else
+              {
+                for (int i = 0; i < 100; i++) {
+
+                  if (roomname[i] = '\0')
+                  {
+                    roomname[i] = location;
+                    roomweight[i] = root["edges"][i]["weight"];
+
+                  }
+
+                }
+
+              }
+
+            }
+
+
+
+
+
+            ;struct Room Room;
+
+            ;strcpy( .title, "C Programming");
+
+
+
+
 
 /*
             struct Room location;
