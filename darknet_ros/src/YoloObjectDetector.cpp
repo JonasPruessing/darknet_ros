@@ -25,6 +25,13 @@
 
 
 
+#include <iostream>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <functional>
+
+
 // for Json
 
 
@@ -103,6 +110,33 @@ std::string darknetFilePath_ = DARKNET_FILE_PATH;
 #else
 #error Path of darknet repository is not defined in CMakeLists.txt.
 #endif
+/*
+typedef struct node {
+    int val;
+    char locaname[30];
+    struct node * next;
+} node_t;
+
+
+node_t * head = NULL;
+head = malloc(sizeof(node_t));
+if (head == NULL) {
+return 1;
+}
+
+head->val = 1;
+head->locaname = "Listenanfang"
+head->next = NULL;
+
+node_t * head = NULL;
+head = malloc(sizeof(node_t));
+head->val = 1;
+head->next = malloc(sizeof(node_t));
+head->next->val = 2;
+head->next->next = NULL;
+
+*/
+int counterVar = 0;
 
 namespace darknet_ros {
 
@@ -429,6 +463,7 @@ detection *YoloObjectDetector::avgPredictions(network *net, int *nboxes)
 
 
 
+
 void *YoloObjectDetector::detectInThread()
 {
   running_ = 1;
@@ -553,7 +588,7 @@ if (dets[i].prob[j] > demoThresh_){
 
             Json::FastWriter fastWriter;
             std::string output = fastWriter.write(root["edges"][i]["end"]["term"]);
-
+          std::string weight = fastWriter.write(root["edges"][i]["weight"]);
 
          //   const string value1 = root["edges"][i]["end"]["term"];
            // string result1 = value1.Right(3);
@@ -568,12 +603,25 @@ if (dets[i].prob[j] > demoThresh_){
             std::string location = output;
 
             // cutting stuff away
-            char roomnameholder[35];
-            location = output.substr(7);
+           // char roomnameholder[35];
+            location = output.substr(7);  // 7 = /c/en/
             location[location.size()-2] = '\0';
-            std::cout << "Ort: " << location << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
-            strcpy(roomnameholder, location);
+           // std::cout << "Ort: " << location << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
 
+
+            if (detectedRooms_.find(location) == detectedRooms_.end()) {
+
+              detectedRooms_.emplace(location, std::stoi(weight));
+
+            } else {
+
+              detectedRooms_[location]= std::stoi(weight) + detectedRooms_.at(location);
+
+            }
+
+
+          //  roomnameholder = location;
+/*
 
             for (int i = 0; i < 100; i++) {
 
@@ -609,7 +657,7 @@ if (dets[i].prob[j] > demoThresh_){
 
 
 
-/*
+
             struct Room location;
             strcpy(location.name, location);
             location.weight = root["edges"][i]["weight"];
@@ -960,10 +1008,39 @@ void *YoloObjectDetector::publishInThread()
     rosBoxCounter_[i] = 0;
   }
 
+  for (auto& x: detectedRooms_) {
+    std::cout << x.first << ": " << x.second << '\n';
+  }
+  std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+  typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
+
+  // Defining a lambda function to compare two pairs. It will compare two pairs using second field
+  Comparator compFunctor =
+          [](std::pair<std::string, int> elem1 ,std::pair<std::string, int> elem2)
+          {
+              return elem1.second < elem2.second;
+          };
 
 
+  if ( counterVar >= 3 )
+  {
 
+  // Declaring a set that will store the pairs using above comparision logic
+  std::set<std::pair<std::string, int>, Comparator> setOfWords(
+          detectedRooms_.begin(), detectedRooms_.end(), compFunctor);
+
+  // Iterate over a set using range base for loop
+  // It will display the items in sorted order of values
+  for (std::pair<std::string, int> element : setOfWords)
+    std::cout << element.first << " :: " << element.second << std::endl;
+  counterVar = 0;
+
+  }
+
+counterVar ++;
   return 0;
+
 }
 
 

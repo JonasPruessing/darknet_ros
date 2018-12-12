@@ -8,14 +8,13 @@
 
 #pragma once
 
-extern int roomindex = 0;
-extern    char roomname[100][35];
-extern    int roomweight[100];
+
 
 // c++
 #include <math.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <pthread.h>
 #include <thread>
@@ -162,6 +161,9 @@ class YoloObjectDetector
   std::vector<std::vector<RosBox_> > rosBoxes_;
   std::vector<int> rosBoxCounter_;
   darknet_ros_msgs::BoundingBoxes boundingBoxesResults_;
+
+  //! detected rooms
+  std::map<std::string, int> detectedRooms_;
 
   //! Camera related parameters.
   int frameWidth_;
