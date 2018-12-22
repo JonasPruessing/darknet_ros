@@ -570,8 +570,8 @@ if (dets[i].prob[j] > demoThresh_){
 
     for (int i = 0; i < root["edges"].size(); i++){
 
-        if (root["edges"][i]["rel"]["label"] == "AtLocation" && root["edges"][i]["start"]["@id"] == startid) {
-
+       // if ((root["edges"][i]["rel"]["label"] == "AtLocation" || root["edges"][i]["rel"]["label"] == "RelatedTo" ) && root["edges"][i]["start"]["@id"] == startid) { +++++++++++++ alternative try but adds a lot of nonsens rooms
+       if (root["edges"][i]["rel"]["label"] == "AtLocation"  && root["edges"][i]["start"]["@id"] == startid) {
           //  std_msgs::String location;
 
             Json::FastWriter fastWriter;
@@ -587,9 +587,9 @@ if (dets[i].prob[j] > demoThresh_){
             //location.erase(std::remove(location.begin(), location.end(), '\n'), location.end());
             std::string locationLoca = location;
             locationLoca.erase(std::remove(locationLoca.begin(), locationLoca.end(), '\n'), locationLoca.end());
-            std::string adreLoca = "http://api.conceptnet.io/relatedness?node1=/c/en/room&node2=/c/en/" + locationLoca;
+            //std::string adreLoca = "http://api.conceptnet.io/relatedness?node1=/c/en/room&node2=/c/en/" + locationLoca;
             //std::string adreLoca = "http://api.conceptnet.io/query?node=/c/en/" + locationLoca + "&other=/c/en/room";
-            //std::string adreLoca =  "http://api.conceptnet.io/query?node=/c/en/office&other=/c/en/room";
+            std::string adreLoca =  "http://api.conceptnet.io/query?other=/c/en/room&node=/c/en/" + locationLoca;
 
 
             RestClient::Connection* connLoca = new RestClient::Connection(adreLoca);
@@ -597,7 +597,7 @@ if (dets[i].prob[j] > demoThresh_){
             headersLoca["Accept"] = "application/json";
             connLoca->SetHeaders(headersLoca);
          //  std::cout << location << std::endl;
-       //     std::cout << adreLoca << std::endl;
+         //   std::cout << adreLoca << std::endl;
 
             RestClient::Response rLoca = connLoca->get("");
             Json::Value rootLoca;
@@ -611,20 +611,34 @@ if (dets[i].prob[j] > demoThresh_){
                            << reader.getFormattedErrorMessages();
                 return 0;
             }
-           // std::cout << rootLoca << std::endl;
+
 
 
                 //Json::FastWriter fastWriter;
                 Json::FastWriter fastWriterLoca;
-                std::string outputLoca = fastWriterLoca.write(rootLoca["@id"]);
-                std::string weightLoca = fastWriterLoca.write(rootLoca["value"]);
 
+                // ++++++++++++++++++++++++++++++++++++ for Relation +++++++++++++++++++++++++
+                //   std::string outputLoca = fastWriterLoca.write(rootLoca["@id"]);
+             //   std::string weightLoca = fastWriterLoca.write(rootLoca["value"]);
+             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+            //   std::string outputLoca = fastWriterLoca.write(rootLoca["@id"]);
+            //   std::string outputLocaEndId = fastWriterLoca.write(rootLoca["edges"][0]["end"]["@id"]);
+               std::string weightLoca = fastWriterLoca.write(rootLoca["edges"][0]["weight"]);
+
+             std::string weightLocaTest = weightLoca;
+           // std::cout << weightLocaTest.size() << std::endl;
            // std::cout << weightLoca << std::endl;
                 //int nLocaweight = std::stoi(weightLoca);
-                if ( std::stof(weightLoca) >= 0.17 )  {
-               //     std::cout << outputLoca << std::endl;
-                 //   std::cout << weightLoca << std::endl;
+                if (weightLocaTest.size() != 5 ) {           // ----------------------------------------------- remove NULL - not done jet -----------------------
+                if ( std::stof(weightLocaTest) >= 0.5 ) {    // ----------------------------------------------- Bypass for Location<->Room Relation
+                    //     std::cout << outputLoca << std::endl;
+                    //   std::cout << weightLoca << std::endl;
 
+
+                    std::cout << locationLoca << std::endl;
+                    std::cout << weightLoca << std::endl;
+                    std::cout << weight << std::endl;
                     //   std::string someString = root["edges"][i]["end"]["term"];
 
 
@@ -648,8 +662,15 @@ if (dets[i].prob[j] > demoThresh_){
 // trying to creat a List with two column
 
 
-                   // std::cout << "Ort: " << locationLoca << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
+                    // std::cout << "Ort: " << locationLoca << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
 
+
+
+
+
+
+
+                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ add Room to detectedRooms List
 
                     if (detectedRooms_.find(locationLoca) == detectedRooms_.end()) {
 
@@ -662,7 +683,7 @@ if (dets[i].prob[j] > demoThresh_){
                     }
 
 
-                //  roomnameholder = location;
+                    //  roomnameholder = location;
 /*
 
             for (int i = 0; i < 100; i++) {
@@ -733,6 +754,7 @@ if (dets[i].prob[j] > demoThresh_){
             std::cout << location << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
 
             */
+                }
             }
         }
     }
