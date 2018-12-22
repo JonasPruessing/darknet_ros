@@ -28,6 +28,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <vector>
 #include <algorithm>
 #include <functional>
 
@@ -517,7 +518,7 @@ void *YoloObjectDetector::detectInThread()
 if (dets[i].prob[j] > demoThresh_){
 
     std::cout<< demoNames_[j] <<std::endl;
-
+    counterVar ++;
 
     // trying to implement ros publisher
 
@@ -573,54 +574,95 @@ if (dets[i].prob[j] > demoThresh_){
 
           //  std_msgs::String location;
 
-
-
-
-         //   std::string someString = root["edges"][i]["end"]["term"];
-
-
-           // char otherString[6]; // note 6, not 5, there's one there for the null terminator
-
-
-           // strncpy(otherString, someString, 5);
-          //  otherString[5] = '\0'; // place the null terminator
-
-
             Json::FastWriter fastWriter;
             std::string output = fastWriter.write(root["edges"][i]["end"]["term"]);
-          std::string weight = fastWriter.write(root["edges"][i]["weight"]);
-
-         //   const string value1 = root["edges"][i]["end"]["term"];
-           // string result1 = value1.Right(3);
-
-           // char* Locationterm = Location;
-             //      char* pterm = Locationterm;
-               //     Locationterm = pterm - 6;
-
-
-// trying to creat a List with two column
+            std::string weight = fastWriter.write(root["edges"][i]["weight"]);
 
             std::string location = output;
 
             // cutting stuff away
-           // char roomnameholder[35];
-            location = output.substr(7);  // 7 = /c/en/
-            location[location.size()-2] = '\0';
-           // std::cout << "Ort: " << location << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
+            // char roomnameholder[35];
+            location = output.substr(7);  // 7 = "/c/en/
+            location[location.size() - 2] = '\0';
+            //location.erase(std::remove(location.begin(), location.end(), '\n'), location.end());
+            std::string locationLoca = location;
+            locationLoca.erase(std::remove(locationLoca.begin(), locationLoca.end(), '\n'), locationLoca.end());
+            std::string adreLoca = "http://api.conceptnet.io/relatedness?node1=/c/en/room&node2=/c/en/" + locationLoca;
+            //std::string adreLoca = "http://api.conceptnet.io/query?node=/c/en/" + locationLoca + "&other=/c/en/room";
+            //std::string adreLoca =  "http://api.conceptnet.io/query?node=/c/en/office&other=/c/en/room";
 
 
-            if (detectedRooms_.find(location) == detectedRooms_.end()) {
+            RestClient::Connection* connLoca = new RestClient::Connection(adreLoca);
+            RestClient::HeaderFields headersLoca;
+            headersLoca["Accept"] = "application/json";
+            connLoca->SetHeaders(headersLoca);
+         //  std::cout << location << std::endl;
+       //     std::cout << adreLoca << std::endl;
 
-              detectedRooms_.emplace(location, std::stoi(weight));
+            RestClient::Response rLoca = connLoca->get("");
+            Json::Value rootLoca;
+            Json::Reader readerLoca;
 
-            } else {
 
-              detectedRooms_[location]= std::stoi(weight) + detectedRooms_.at(location);
-
+            bool parsingSuccessful = readerLoca.parse( rLoca.body, rootLoca );     //parse process
+            if ( !parsingSuccessful )
+            {
+                std::cout  << "Failed to parse"
+                           << reader.getFormattedErrorMessages();
+                return 0;
             }
+           // std::cout << rootLoca << std::endl;
 
 
-          //  roomnameholder = location;
+                //Json::FastWriter fastWriter;
+                Json::FastWriter fastWriterLoca;
+                std::string outputLoca = fastWriterLoca.write(rootLoca["@id"]);
+                std::string weightLoca = fastWriterLoca.write(rootLoca["value"]);
+
+           // std::cout << weightLoca << std::endl;
+                //int nLocaweight = std::stoi(weightLoca);
+                if ( std::stof(weightLoca) >= 0.17 )  {
+               //     std::cout << outputLoca << std::endl;
+                 //   std::cout << weightLoca << std::endl;
+
+                    //   std::string someString = root["edges"][i]["end"]["term"];
+
+
+                    // char otherString[6]; // note 6, not 5, there's one there for the null terminator
+
+
+                    // strncpy(otherString, someString, 5);
+                    //  otherString[5] = '\0'; // place the null terminator
+
+
+
+
+                    //   const string value1 = root["edges"][i]["end"]["term"];
+                    // string result1 = value1.Right(3);
+
+                    // char* Locationterm = Location;
+                    //      char* pterm = Locationterm;
+                    //     Locationterm = pterm - 6;
+
+
+// trying to creat a List with two column
+
+
+                   // std::cout << "Ort: " << locationLoca << "Gewicht: " << root["edges"][i]["weight"] << std::endl;
+
+
+                    if (detectedRooms_.find(locationLoca) == detectedRooms_.end()) {
+
+                        detectedRooms_.emplace(locationLoca, std::stof(weight));
+
+                    } else {
+
+                        detectedRooms_[locationLoca] = std::stof(weight) + detectedRooms_.at(locationLoca);
+
+                    }
+
+
+                //  roomnameholder = location;
 /*
 
             for (int i = 0; i < 100; i++) {
@@ -691,6 +733,7 @@ if (dets[i].prob[j] > demoThresh_){
             std::cout << location << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
 
             */
+            }
         }
     }
 
@@ -949,6 +992,7 @@ void *YoloObjectDetector::publishInThread()
 
 
 
+
   // Publish bounding boxes and detection result.
   int num = roiBoxes_[0].num;
   if (num > 0 && num <= 100) {
@@ -1008,38 +1052,60 @@ void *YoloObjectDetector::publishInThread()
     rosBoxCounter_[i] = 0;
   }
 
-  for (auto& x: detectedRooms_) {
-    std::cout << x.first << ": " << x.second << '\n';
-  }
-  std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
-
-  typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
-
-  // Defining a lambda function to compare two pairs. It will compare two pairs using second field
-  Comparator compFunctor =
-          [](std::pair<std::string, int> elem1 ,std::pair<std::string, int> elem2)
-          {
-              return elem1.second < elem2.second;
-          };
 
 
-  if ( counterVar >= 3 )
+
+
+
+
+  if ( counterVar >= 10 )
   {
 
-  // Declaring a set that will store the pairs using above comparision logic
-  std::set<std::pair<std::string, int>, Comparator> setOfWords(
-          detectedRooms_.begin(), detectedRooms_.end(), compFunctor);
 
-  // Iterate over a set using range base for loop
-  // It will display the items in sorted order of values
-  for (std::pair<std::string, int> element : setOfWords)
-    std::cout << element.first << " :: " << element.second << std::endl;
-  counterVar = 0;
+      /*
 
-  }
+           std::cout << "mymap contains:\n";
 
-counterVar ++;
-  return 0;
+           std::pair<char,int> highest = detectedRooms_.rbegin();                 // last element
+
+           std::map<char,int>::iterator it = detectedRooms_.begin();
+           do {
+               std::cout << it->first << " => " << it->second << '\n';
+           } while ( detectedRooms_.value_comp()(*it++, hist) );
+           counterVar = 0;
+
+
+
+
+
+      */
+
+
+
+
+           for (auto& x: detectedRooms_) {
+               std::cout << x.first << ": " << x.second << '\n';
+           }
+           std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+
+       // Declaring a set that will store the pairs using above comparision logic
+      std::vector<std::pair<std::string, int> > setOfWords(detectedRooms_.begin(), detectedRooms_.end());
+      std::sort(setOfWords.begin(), setOfWords.end(), [](const std::pair<std::string, int>& elem1 , const std::pair<std::string, int>& elem2) -> bool
+      {
+          return elem1.second < elem2.second;
+      });
+
+       // Iterate over a set using range base for loop
+       // It will display the items in sorted order of values
+       for (auto& element : setOfWords)
+         std::cout << element.first << " :: " << element.second << std::endl;
+       counterVar = 0;
+
+       }
+
+
+       return 0;
 
 }
 
