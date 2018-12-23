@@ -70,9 +70,9 @@ yolo_model:
       - bed
       - diningtable
       - toilet
-      - tvmonitor
+      - monitor
       - laptop
-      - mouse
+      - computer mouse
       - remote
       - keyboard
       - cell phone

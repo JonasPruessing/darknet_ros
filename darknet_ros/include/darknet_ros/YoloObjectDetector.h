@@ -164,6 +164,7 @@ class YoloObjectDetector
 
   //! detected rooms
   std::map<std::string, int> detectedRooms_;
+std::map<std::string, int> detectedObjects_;
 
   //! Camera related parameters.
   int frameWidth_;

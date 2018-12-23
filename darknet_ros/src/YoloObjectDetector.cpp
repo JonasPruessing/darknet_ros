@@ -520,6 +520,17 @@ if (dets[i].prob[j] > demoThresh_){
     std::cout<< demoNames_[j] <<std::endl;
     counterVar ++;
 
+
+    if (detectedObjects_.find(demoNames_[j]) == detectedObjects_.end()) {
+
+        detectedObjects_.emplace(demoNames_[j], 1);
+
+    } else {
+
+        detectedObjects_[demoNames_[j]] = 1 + detectedObjects_.at(demoNames_[j]);
+
+    }
+
     // trying to implement ros publisher
 
 //ros::init(argc, argv, "talker");
@@ -636,9 +647,9 @@ if (dets[i].prob[j] > demoThresh_){
                     //   std::cout << weightLoca << std::endl;
 
 
-                    std::cout << locationLoca << std::endl;
-                    std::cout << weightLoca << std::endl;
-                    std::cout << weight << std::endl;
+                  //  std::cout << locationLoca << std::endl;
+                 //   std::cout << weightLoca << std::endl;
+                 //   std::cout << weight << std::endl;
                     //   std::string someString = root["edges"][i]["end"]["term"];
 
 
@@ -1080,7 +1091,7 @@ void *YoloObjectDetector::publishInThread()
 
 
 
-  if ( counterVar >= 10 )
+  if ( counterVar >= 1 )
   {
 
 
@@ -1105,11 +1116,70 @@ void *YoloObjectDetector::publishInThread()
 
 
 
-           for (auto& x: detectedRooms_) {
-               std::cout << x.first << ": " << x.second << '\n';
-           }
-           std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
 
+
+
+
+
+      for (auto& y: detectedObjects_) {
+        //  std::cout << y.first << ": " << y.second << '\n';
+
+          for (auto& x: detectedRooms_) {
+           //   std::cout << x.first << ": " << x.second << '\n';
+
+              std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+
+              RestClient::init();
+              RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
+              RestClient::HeaderFields headersRelat;
+              headersRelat["Accept"] = "application/json";
+              connRelat->SetHeaders(headersRelat);
+              RestClient::Response rRelat = connRelat->get("");
+              Json::Value rootRelat;
+              Json::Reader readerRelat;
+              bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
+              if ( !parsingSuccessful )
+              {
+                  std::cout  << "Failed to parse"
+                             << readerRelat.getFormattedErrorMessages();
+                  return 0;
+              }
+
+              Json::FastWriter fastWriterRelat;
+
+              std::string valueRelat = fastWriterRelat.write(rootRelat["value"]);
+            //  std::cout << valueRelat << '\n';
+
+
+                  detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) + detectedRooms_.at(x.first) ;
+
+
+          }
+
+
+      }
+
+
+
+
+
+
+
+
+
+      for (auto& x: detectedObjects_) {
+          std::cout << x.first << ": " << x.second << '\n';
+      }
+      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+/*
+
+      for (auto& x: detectedRooms_) {
+          std::cout << x.first << ": " << x.second << '\n';
+      }
+      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+      */
 
        // Declaring a set that will store the pairs using above comparision logic
       std::vector<std::pair<std::string, int> > setOfWords(detectedRooms_.begin(), detectedRooms_.end());
