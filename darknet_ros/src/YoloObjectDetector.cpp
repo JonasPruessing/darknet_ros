@@ -467,6 +467,85 @@ detection *YoloObjectDetector::avgPredictions(network *net, int *nboxes)
 
 void *YoloObjectDetector::detectInThread()
 {
+
+    std::cout << initVarRooms_ << '\n';
+    if (initVarRooms_ == 0 )
+    {
+
+        /*
+
+        std::string adreRooms ="http://api.conceptnet.io/c/en/room?offset=0&limit=500";
+
+        RestClient::init();
+        RestClient::Connection* connRooms = new RestClient::Connection(adreRooms);
+        RestClient::HeaderFields headersRooms;
+        headersRooms["Accept"] = "application/json";
+        connRooms->SetHeaders(headersRooms);
+        RestClient::Response rRooms = connRooms->get("");
+        Json::Value rootRooms;
+        Json::Reader readerRooms;
+        bool parsingSuccessful = readerRooms.parse( rRooms.body, rootRooms );     //parse process
+        if ( !parsingSuccessful )
+        {
+            std::cout  << "Failed to parse"
+                       << readerRooms.getFormattedErrorMessages();
+            return 0;
+        }
+
+        Json::FastWriter fastWriterRooms;
+
+        for (int i = 0; i < rootRooms["edges"].size(); i++){
+
+
+         //   std::cout << rootRooms["edges"][i]["rel"]["label"] << '\n';
+         //   std::cout << rootRooms["edges"][i]["end"]["term"] << '\n';
+             if (rootRooms["edges"][i]["rel"]["label"] == "IsA"  && rootRooms["edges"][i]["end"]["term"] == "/c/en/room") {
+
+
+
+                 std::string locationRoom;
+                Json::FastWriter fastWriter;
+                std::string outputRooms = fastWriter.write(rootRooms["edges"][i]["start"]["term"]);
+                locationRoom = outputRooms.substr(7);  // 7 = "/c/en/
+                locationRoom[locationRoom.size() - 2] = '\0'; // for deleating /n
+                //std::string weight = fastWriter.write(root["edges"][i]["weight"]);
+
+
+                 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ add Room to detectedRooms List
+                 std::cout << locationRoom << '\n';
+                 */
+
+
+
+
+
+        detectedRooms_.emplace("living_room", 100);
+        detectedRooms_.emplace("kitchen", 100);
+        detectedRooms_.emplace("bathroom", 100);
+        detectedRooms_.emplace("bedroom", 100);
+    //    detectedRooms_.emplace("cupboard", 100);
+        detectedRooms_.emplace("dining_room", 100);
+        detectedRooms_.emplace("office", 100);
+        detectedRooms_.emplace("nursery", 100);
+        detectedRooms_.emplace("cloakroom", 100);
+
+
+
+          //  }}
+
+
+        initVarRooms_ = 1;
+
+
+        //  std::cout << valueRooms << '\n';
+
+    }
+
+
+
+
+
+
   running_ = 1;
   float nms = .4;
 
@@ -519,15 +598,18 @@ if (dets[i].prob[j] > demoThresh_){
 
     std::cout<< demoNames_[j] <<std::endl;
     counterVar ++;
+    std::string ApiObjects;
+    ApiObjects = demoNames_[j];
 
+    std::replace( ApiObjects.begin(), ApiObjects.end(), ' ', '_');
 
-    if (detectedObjects_.find(demoNames_[j]) == detectedObjects_.end()) {
+    if (detectedObjects_.find(ApiObjects) == detectedObjects_.end()) {
 
-        detectedObjects_.emplace(demoNames_[j], 1);
+        detectedObjects_.emplace(ApiObjects, 1);
 
     } else {
 
-        detectedObjects_[demoNames_[j]] = 1 + detectedObjects_.at(demoNames_[j]);
+        detectedObjects_[ApiObjects] = 1 + detectedObjects_.at(ApiObjects);
 
     }
 
@@ -543,6 +625,8 @@ if (dets[i].prob[j] > demoThresh_){
     ss << demoNames_[j];
     msg.data = ss.str();
     JonasObjektspamer_pub_.publish(msg);
+
+    /*
 
     std::cout << "#######################+############################+#################################" << std::endl;
     std::string adre ="http://api.conceptnet.io/c/en/" + ss.str() + "?offset=0&limit=100";
@@ -594,7 +678,7 @@ if (dets[i].prob[j] > demoThresh_){
             // cutting stuff away
             // char roomnameholder[35];
             location = output.substr(7);  // 7 = "/c/en/
-            location[location.size() - 2] = '\0';
+            location[location.size() - 2] = '\0'; // for deleating /n
             //location.erase(std::remove(location.begin(), location.end(), '\n'), location.end());
             std::string locationLoca = location;
             locationLoca.erase(std::remove(locationLoca.begin(), locationLoca.end(), '\n'), locationLoca.end());
@@ -681,17 +765,6 @@ if (dets[i].prob[j] > demoThresh_){
 
 
 
-                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ add Room to detectedRooms List
-
-                    if (detectedRooms_.find(locationLoca) == detectedRooms_.end()) {
-
-                        detectedRooms_.emplace(locationLoca, std::stof(weight));
-
-                    } else {
-
-                        detectedRooms_[locationLoca] = std::stof(weight) + detectedRooms_.at(locationLoca);
-
-                    }
 
 
                     //  roomnameholder = location;
@@ -764,15 +837,17 @@ if (dets[i].prob[j] > demoThresh_){
 
             std::cout << location << " : Gewicht: " << root["edges"][i]["weight"]  << std::endl;
 
-            */
+
                 }
             }
+
+
         }
     }
 
 
 
-
+*/
 
 
 
@@ -824,9 +899,60 @@ if (dets[i].prob[j] > demoThresh_){
     roiBoxes_[0].num = count;
   }
 
+
+
+
+    for (auto& y: detectedObjects_) {
+        //  std::cout << y.first << ": " << y.second << '\n';
+
+        for (auto& x: detectedRooms_) {
+            // std::cout << x.first << ": " << x.second << '\n';
+
+            std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+
+            RestClient::init();
+            RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
+            RestClient::HeaderFields headersRelat;
+            headersRelat["Accept"] = "application/json";
+            connRelat->SetHeaders(headersRelat);
+            RestClient::Response rRelat = connRelat->get("");
+            Json::Value rootRelat;
+            Json::Reader readerRelat;
+            bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
+            if ( !parsingSuccessful )
+            {
+                std::cout  << "Failed to parse"
+                           << readerRelat.getFormattedErrorMessages();
+                return 0;
+            }
+
+            Json::FastWriter fastWriterRelat;
+
+            std::string valueRelat = fastWriterRelat.write(rootRelat["value"]);
+            //  std::cout << valueRelat << '\n';
+
+
+            detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first) ;
+
+
+        }
+
+
+    }
+
+
+
+
   free_detections(dets, nboxes);
   demoIndex_ = (demoIndex_ + 1) % demoFrame_;
   running_ = 0;
+
+
+
+
+
+
+
   return 0;
 }
 
@@ -1121,43 +1247,6 @@ void *YoloObjectDetector::publishInThread()
 
 
 
-      for (auto& y: detectedObjects_) {
-        //  std::cout << y.first << ": " << y.second << '\n';
-
-          for (auto& x: detectedRooms_) {
-           //   std::cout << x.first << ": " << x.second << '\n';
-
-              std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
-
-              RestClient::init();
-              RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
-              RestClient::HeaderFields headersRelat;
-              headersRelat["Accept"] = "application/json";
-              connRelat->SetHeaders(headersRelat);
-              RestClient::Response rRelat = connRelat->get("");
-              Json::Value rootRelat;
-              Json::Reader readerRelat;
-              bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
-              if ( !parsingSuccessful )
-              {
-                  std::cout  << "Failed to parse"
-                             << readerRelat.getFormattedErrorMessages();
-                  return 0;
-              }
-
-              Json::FastWriter fastWriterRelat;
-
-              std::string valueRelat = fastWriterRelat.write(rootRelat["value"]);
-            //  std::cout << valueRelat << '\n';
-
-
-                  detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) + detectedRooms_.at(x.first) ;
-
-
-          }
-
-
-      }
 
 
 

@@ -163,6 +163,7 @@ class YoloObjectDetector
   darknet_ros_msgs::BoundingBoxes boundingBoxesResults_;
 
   //! detected rooms
+  int initVarRooms_ = 0;
   std::map<std::string, int> detectedRooms_;
 std::map<std::string, int> detectedObjects_;
 
