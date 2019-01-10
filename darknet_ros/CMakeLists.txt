@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.8.12)
 project(darknet_ros)
 
 # Set c++11 cmake flags
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -lX11 -lxcb ${CMAKE_CXX_FLAGS}")
 
-
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/darknet_ros/darknet_ros/cmake_modules/")
 
@@ -51,6 +51,7 @@ include_directories(${LIBRESTCLIENT_CPP_INCLUDE_DIRS})
 MESSAGE ( STATUS "Searching for X11..." )
 FIND_PACKAGE ( X11 REQUIRED )
 IF ( X11_FOUND )
+  MESSAGE ( STATUS "Found X11..." )
   INCLUDE_DIRECTORIES ( ${X11_INCLUDE_DIR} )
   LINK_LIBRARIES ( ${X11_LIBRARIES} )
   MESSAGE ( STATUS " X11_INCLUDE_DIR: " ${X11_INCLUDE_DIR} )
@@ -111,7 +112,7 @@ if (CUDA_FOUND)
     /usr/local/cuda/lib64
   )
 
-  cuda_add_library(${PROJECT_NAME}_lib
+  cuda_add_library(${PROJECT_NAME}_lib STATIC
     src/YoloObjectDetector.cpp
     src/image_interface.c
 
@@ -178,7 +179,7 @@ if (CUDA_FOUND)
 
 else()
 
-  add_library(${PROJECT_NAME}_lib
+  add_library(${PROJECT_NAME}_lib STATIC
     src/YoloObjectDetector.cpp
     src/image_interface.c
 

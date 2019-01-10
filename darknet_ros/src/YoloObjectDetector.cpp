@@ -530,6 +530,7 @@ void *YoloObjectDetector::detectInThread()
         detectedRooms_.emplace("cloakroom", 100);
 
 
+        
 
           //  }}
 
