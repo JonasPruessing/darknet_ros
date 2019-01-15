@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(darknet_ros)
 
 # Set c++11 cmake flags
-set(CMAKE_CXX_FLAGS "-std=c++11 -fPIC -lX11 -lxcb ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS " -lpthread -std=c++11 -fPIC -lX11 -lxcb -lz -lrt -lcrypto -lcurl ${CMAKE_CXX_FLAGS}")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -14,6 +14,24 @@ find_path(DARKNET_PATH
   HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../darknet/")
 message("Darknet path dir = ${DARKNET_PATH}")
 add_definitions(-DDARKNET_FILE_PATH="${DARKNET_PATH}")
+
+
+find_package(PkgConfig)
+
+pkg_check_modules(XRANDR xcb-randr)
+pkg_check_modules(XCB xcb)
+pkg_check_modules(CURL curl)
+
+set(CURL_LIBRARY "-lcurl") 
+
+find_package(CURL REQUIRED)
+
+include_directories (
+        ${XRANDR_INCLUDE_DIR}
+        ${XCB_INCLUDE_DIR}
+        ${CURL_INCLUDE_DIR}
+)
+
 
 # Find CUDA
 FIND_PACKAGE(CUDA)
@@ -71,6 +89,7 @@ find_package(catkin REQUIRED
     actionlib
     darknet_ros_msgs
     image_transport
+
 
 )
 
@@ -157,6 +176,8 @@ if (CUDA_FOUND)
   )
 
   target_link_libraries(${PROJECT_NAME}_lib
+          ${XCB_LDFLAGS}
+          ${CURL_LDFLAGS}
     m
     pthread
     stdc++
@@ -171,6 +192,7 @@ if (CUDA_FOUND)
     ${OpenCV_LIBS}
     ${LIBRESTCLIENT_CPP_LIBRARIES}
     #${LIBJSONCPP_LIBRARIES}
+	${CURL_LIBRARIES}
   )
 
   cuda_add_executable(${PROJECT_NAME}
@@ -226,8 +248,11 @@ else()
     ${OpenCV_LIBRARIES}
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
+          ${XCB_LDFLAGS}
+          ${CURL_LDFLAGS}
     ${LIBRESTCLIENT_CPP_LIBRARIES}
           #${LIBJSONCPP_LIBRARIES}
+${CURL_LIBRARIES}
   )
 
   add_executable(${PROJECT_NAME}
@@ -238,6 +263,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_lib
+${CURL_LIBRARIES}
 )
 
 add_dependencies(${PROJECT_NAME}_lib
@@ -303,6 +329,7 @@ if(CATKIN_ENABLE_TESTING)
     ${catkin_LIBRARIES}
     ${LIBRESTCLIENT_CPP_LIBRARIES}
          # ${LIBJSONCPP_LIBRARIES}
+${CURL_LIBRARIES}
 
   )
 endif()

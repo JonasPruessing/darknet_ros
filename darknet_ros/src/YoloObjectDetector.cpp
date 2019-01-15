@@ -568,6 +568,10 @@ void *YoloObjectDetector::detectInThread()
     printf("Objects:\n\n");
   }
   image display = buff_[(buffIndex_+2) % 3];
+
+    std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+    std::cout << "Object :: Probability" << '\n';
+    std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
   draw_detections(display, dets, nboxes, demoThresh_, demoNames_, demoAlphabet_, demoClasses_);
 
 
@@ -597,8 +601,8 @@ void *YoloObjectDetector::detectInThread()
         // If wahrscheinlichkeit for detection is higher then defined border wahrscheinlichkeit then print name
 if (dets[i].prob[j] > demoThresh_){
 
-    std::cout<< demoNames_[j] <<std::endl;
-    counterVar ++;
+    //std::cout<< demoNames_[j] <<std::endl;
+
     std::string ApiObjects;
     ApiObjects = demoNames_[j];
 
@@ -902,44 +906,132 @@ if (dets[i].prob[j] > demoThresh_){
 
 
 
+    counterVar ++;
 
-    for (auto& y: detectedObjects_) {
-        //  std::cout << y.first << ": " << y.second << '\n';
 
-        for (auto& x: detectedRooms_) {
-            // std::cout << x.first << ": " << x.second << '\n';
+    if ( counterVar >= 3 )
+    {
 
-            std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
 
-            RestClient::init();
-            RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
-            RestClient::HeaderFields headersRelat;
-            headersRelat["Accept"] = "application/json";
-            connRelat->SetHeaders(headersRelat);
-            RestClient::Response rRelat = connRelat->get("");
-            Json::Value rootRelat;
-            Json::Reader readerRelat;
-            bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
-            if ( !parsingSuccessful )
-            {
-                std::cout  << "Failed to parse"
-                           << readerRelat.getFormattedErrorMessages();
-                return 0;
+        /*
+
+             std::cout << "mymap contains:\n";
+
+             std::pair<char,int> highest = detectedRooms_.rbegin();                 // last element
+
+             std::map<char,int>::iterator it = detectedRooms_.begin();
+             do {
+                 std::cout << it->first << " => " << it->second << '\n';
+             } while ( detectedRooms_.value_comp()(*it++, hist) );
+             counterVar = 0;
+
+
+
+
+
+        */
+
+
+        for (auto& y: detectedObjects_) {
+            //  std::cout << y.first << ": " << y.second << '\n';
+
+            for (auto& x: detectedRooms_) {
+                // std::cout << x.first << ": " << x.second << '\n';
+
+                std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+
+                RestClient::init();
+                RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
+                RestClient::HeaderFields headersRelat;
+                headersRelat["Accept"] = "application/json";
+                connRelat->SetHeaders(headersRelat);
+                RestClient::Response rRelat = connRelat->get("");
+                Json::Value rootRelat;
+                Json::Reader readerRelat;
+                bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
+                if ( !parsingSuccessful )
+                {
+                    std::cout  << "Failed to parse"
+                               << readerRelat.getFormattedErrorMessages();
+                    return 0;
+                }
+
+                Json::FastWriter fastWriterRelat;
+
+                std::string valueRelat = fastWriterRelat.write(rootRelat["value"]);
+                //  std::cout << valueRelat << '\n';
+
+
+                detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first) ;
+
+
             }
-
-            Json::FastWriter fastWriterRelat;
-
-            std::string valueRelat = fastWriterRelat.write(rootRelat["value"]);
-            //  std::cout << valueRelat << '\n';
-
-
-            detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first) ;
 
 
         }
 
 
+
+
+
+
+
+
+
+
+
+
+        std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+        std::cout << "Object:: Count" << '\n';
+        std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+
+        for (auto& x: detectedObjects_) {
+            std::cout << x.first << ": " << x.second << '\n';
+        }
+
+        std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+        std::cout << "Room :: Score" << '\n';
+        std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+/*
+
+      for (auto& x: detectedRooms_) {
+          std::cout << x.first << ": " << x.second << '\n';
+      }
+      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
+
+      */
+
+        // Declaring a set that will store the pairs using above comparision logic
+        std::vector<std::pair<std::string, int> > setOfWords(detectedRooms_.begin(), detectedRooms_.end());
+        std::sort(setOfWords.begin(), setOfWords.end(), [](const std::pair<std::string, int>& elem1 , const std::pair<std::string, int>& elem2) -> bool
+        {
+            return elem1.second < elem2.second;
+        });
+
+        // Iterate over a set using range base for loop
+        // It will display the items in sorted order of values
+        for (auto& element : setOfWords) {
+            std::cout << element.first << " :: " << element.second << std::endl;
+        }
+
+
+
+        counterVar = 0;
+        detectedObjects_.clear();
+        setOfWords.clear();
+
+        for (auto& z: detectedRooms_) {
+            detectedRooms_[z.first] = 100;
+
+        }
+
     }
+
+
+
+
+
 
 
 
@@ -1214,77 +1306,6 @@ void *YoloObjectDetector::publishInThread()
 
 
 
-
-
-
-
-  if ( counterVar >= 1 )
-  {
-
-
-      /*
-
-           std::cout << "mymap contains:\n";
-
-           std::pair<char,int> highest = detectedRooms_.rbegin();                 // last element
-
-           std::map<char,int>::iterator it = detectedRooms_.begin();
-           do {
-               std::cout << it->first << " => " << it->second << '\n';
-           } while ( detectedRooms_.value_comp()(*it++, hist) );
-           counterVar = 0;
-
-
-
-
-
-      */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      for (auto& x: detectedObjects_) {
-          std::cout << x.first << ": " << x.second << '\n';
-      }
-      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
-
-/*
-
-      for (auto& x: detectedRooms_) {
-          std::cout << x.first << ": " << x.second << '\n';
-      }
-      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
-
-      */
-
-       // Declaring a set that will store the pairs using above comparision logic
-      std::vector<std::pair<std::string, int> > setOfWords(detectedRooms_.begin(), detectedRooms_.end());
-      std::sort(setOfWords.begin(), setOfWords.end(), [](const std::pair<std::string, int>& elem1 , const std::pair<std::string, int>& elem2) -> bool
-      {
-          return elem1.second < elem2.second;
-      });
-
-       // Iterate over a set using range base for loop
-       // It will display the items in sorted order of values
-       for (auto& element : setOfWords)
-         std::cout << element.first << " :: " << element.second << std::endl;
-       counterVar = 0;
-
-       }
 
 
        return 0;
