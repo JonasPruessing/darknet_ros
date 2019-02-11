@@ -1017,39 +1017,10 @@ if (dets[i].prob[j] > demoThresh_){
 
 
 
-        RestClient::disable();
 
-        std::string adreWebApi ="http://localhost:8080/WEBAPI/rest/messages";
-
-        RestClient::init();
-        RestClient::Connection* connWebApi = new RestClient::Connection(adreWebApi);
-        RestClient::HeaderFields headersWebApi;
-
-        headersWebApi["Accept"] = "application/json";
-
-        connWebApi->SetHeaders(headersWebApi);
-        connWebApi->AppendHeader("Content-Type", "application/json");
-
-        RestClient::Response rWebApi = connWebApi->post("/post", "{\"author\":\"Jonas\",\"created\":\"2019-02-10T20:43:51.023Z[UTC]\",\"message\":\"blaaaaa\"}");
+        RestClient::Response rWebApi2 = RestClient::post("http://localhost:8080/WEBAPI/rest/messages", "application/json", "{\"author\":\"Jonas\",\"message\":\"blaaaaa\"}" );
 
 
-
-        Json::Value rootWebApi;
-        Json::Reader readerWebApi;
-        bool parsingSuccessful = readerWebApi.parse( rWebApi.body, rootWebApi );     //parse process
-        if ( !parsingSuccessful )
-        {
-            std::cout  << "Failed to parse"
-                       << readerWebApi.getFormattedErrorMessages();
-            return 0;
-        }
-
-        Json::FastWriter fastWriterWebApi;
-
-        std::string valueWebApi = fastWriterWebApi.write(rootWebApi);
-        std::cout << valueWebApi << '\n';
-
-        RestClient::disable();
 
 
         counterVar = 0;
