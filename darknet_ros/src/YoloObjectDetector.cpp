@@ -528,6 +528,7 @@ void *YoloObjectDetector::detectInThread()
         detectedRooms_.emplace("office", 100);
         detectedRooms_.emplace("nursery", 100);
         detectedRooms_.emplace("cloakroom", 100);
+        detectedRooms_.emplace("airfield", 100);
 
 
         
@@ -909,8 +910,7 @@ if (dets[i].prob[j] > demoThresh_){
     counterVar ++;
 
 
-    if ( counterVar >= 3 )
-    {
+    if ( counterVar >= 3 ) {
 
 
         /*
@@ -932,27 +932,27 @@ if (dets[i].prob[j] > demoThresh_){
         */
 
 
-        for (auto& y: detectedObjects_) {
+        for (auto &y: detectedObjects_) {
             //  std::cout << y.first << ": " << y.second << '\n';
 
-            for (auto& x: detectedRooms_) {
+            for (auto &x: detectedRooms_) {
                 // std::cout << x.first << ": " << x.second << '\n';
 
-                std::string adreRelat ="http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+                std::string adreRelat =
+                        "http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
 
                 RestClient::init();
-                RestClient::Connection* connRelat = new RestClient::Connection(adreRelat);
+                RestClient::Connection *connRelat = new RestClient::Connection(adreRelat);
                 RestClient::HeaderFields headersRelat;
                 headersRelat["Accept"] = "application/json";
                 connRelat->SetHeaders(headersRelat);
                 RestClient::Response rRelat = connRelat->get("");
                 Json::Value rootRelat;
                 Json::Reader readerRelat;
-                bool parsingSuccessful = readerRelat.parse( rRelat.body, rootRelat );     //parse process
-                if ( !parsingSuccessful )
-                {
-                    std::cout  << "Failed to parse"
-                               << readerRelat.getFormattedErrorMessages();
+                bool parsingSuccessful = readerRelat.parse(rRelat.body, rootRelat);     //parse process
+                if (!parsingSuccessful) {
+                    std::cout << "Failed to parse"
+                              << readerRelat.getFormattedErrorMessages();
                     return 0;
                 }
 
@@ -962,7 +962,8 @@ if (dets[i].prob[j] > demoThresh_){
                 //  std::cout << valueRelat << '\n';
 
 
-                detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first) ;
+                detectedRooms_[x.first] =
+                        std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first);
 
 
             }
@@ -971,14 +972,9 @@ if (dets[i].prob[j] > demoThresh_){
         }
 
 
-
-
-
-
-
-
-
-
+        std::string objects;
+        std::string rooms;
+        std::string jsonstring;
 
 
         std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
@@ -986,72 +982,124 @@ if (dets[i].prob[j] > demoThresh_){
         std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
 
 
-        for (auto& x: detectedObjects_) {
+        for (auto &x: detectedObjects_) {
             std::cout << x.first << ": " << x.second << '\n';
+            // objects = objects + x.first + "_" + itoa(x.second) + " ;;; ";
+            objects = objects + x.first + "_";
+
+//++++++++++++++++++++++++++++++++++++ Action Detection ++++++++++++++++++++++++++++++++
+
+            std::string adreObject = "http://api.conceptnet.io/c/en/" + x.first + "?offset=0&limit=1000";
+
+
+            RestClient::init();
+            RestClient::Connection *connObject = new RestClient::Connection(adreObject);
+            RestClient::HeaderFields headers;
+            headers["Accept"] = "application/json";
+            connObject->SetHeaders(headers);
+
+            RestClient::Response rObject = connObject->get("");
+
+
+
+            //RestClient::Response r = RestClient::get(adre , "application/json", "{\"foo\": \"bla\"}");
+            // std::cout << r.body << std::endl;
+
+//Added reading JsonInformation:
+
+            std::string startid = "/c/en/" + x.first;
+
+            Json::Value root;
+            Json::Reader reader;
+            bool parsingSuccessful = reader.parse(rObject.body, root);     //parse process
+            if (!parsingSuccessful) {
+                std::cout << "Failed to parse"
+                          << reader.getFormattedErrorMessages();
+                return 0;
+            }
+            //std::cout << root["edges"].size() << std::endl;
+
+            int ActionCount = 0;
+            for (int i = 0; i < root["edges"].size(); i++) {
+
+                // if ((root["edges"][i]["rel"]["label"] == "AtLocation" || root["edges"][i]["rel"]["label"] == "RelatedTo" ) && root["edges"][i]["start"]["@id"] == startid) { +++++++++++++ alternative try but adds a lot of nonsens rooms
+                if (root["edges"][i]["rel"]["label"] == "UsedFor" && root["edges"][i]["start"]["@id"] == startid &&
+                    root["edges"][i]["end"]["sense_label"] != "n" && ActionCount < 3) {
+                    //  std_msgs::String location;
+
+                    Json::FastWriter fastWriter;
+                    std::string outputAction = fastWriter.write(root["edges"][i]["end"]["term"]);
+                    //std::string weight = fastWriter.write(root["edges"][i]["weight"]);
+
+                    std::string Action = outputAction;
+
+                    // cutting stuff away
+                    // char roomnameholder[35];
+                    Action = outputAction.substr(7);  // 7 = "/c/en/
+                    Action[Action.size() - 2] = '\0'; // for deleating /n
+                    //location.erase(std::remove(location.begin(), location.end(), '\n'), location.end());
+
+                    std::cout << Action << '\n';
+
+                    ActionCount = ActionCount + 1;
+
+
+                }
+
+
+            }
+
+
+            // ++++++++++++++++++++++++ ActionDetection End ++++++++++++++++++++++++++++
+
         }
 
         std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
         std::cout << "Room :: Score" << '\n';
         std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
-/*
 
-      for (auto& x: detectedRooms_) {
-          std::cout << x.first << ": " << x.second << '\n';
-      }
-      std::cout << "+++++++++++++++++++++++++++++++++++" << '\n';
-
-      */
 
         // Declaring a set that will store the pairs using above comparision logic
-        std::vector<std::pair<std::string, int> > setOfWords(detectedRooms_.begin(), detectedRooms_.end());
-        std::sort(setOfWords.begin(), setOfWords.end(), [](const std::pair<std::string, int>& elem1 , const std::pair<std::string, int>& elem2) -> bool
-        {
-            return elem1.second < elem2.second;
-        });
+        std::vector < std::pair < std::string, int >> setOfWords(detectedRooms_.begin(), detectedRooms_.end());
+        std::sort(setOfWords.begin(), setOfWords.end(),
+                  [](const std::pair<std::string, int> &elem1, const std::pair<std::string, int> &elem2) -> bool {
+                      return elem1.second < elem2.second;
+                  });
 
         // Iterate over a set using range base for loop
         // It will display the items in sorted order of values
-        for (auto& element : setOfWords) {
+        for (auto &element : setOfWords) {
             std::cout << element.first << " :: " << element.second << std::endl;
+
+            rooms = rooms + element.first + "_";
+
+            //   rooms = rooms + element.first + "_" + element.second + " ;;; ";
         }
 
+        rooms = setOfWords.back().first;
 
 
+        jsonstring = "{\"author\":\"Jonas\",\"message\":\"blaaaaa\",\"room\":\"" + rooms + "\",\"objects\":\"" +
+                     objects + "\"}";
 
-        RestClient::Response rWebApi2 = RestClient::post("http://localhost:8080/WEBAPI/rest/messages", "application/json", "{\"author\":\"Jonas\",\"message\":\"blaaaaa\"}" );
-
-
+        RestClient::Response rWebApi2 = RestClient::post("http://localhost:8080/WEBAPI/rest/messages",
+                                                         "application/json", jsonstring);
 
 
         counterVar = 0;
         detectedObjects_.clear();
         setOfWords.clear();
 
-        for (auto& z: detectedRooms_) {
+        for (auto &z: detectedRooms_) {
             detectedRooms_[z.first] = 100;
 
         }
 
 
-
-
+        free_detections(dets, nboxes);
+        demoIndex_ = (demoIndex_ + 1) % demoFrame_;
+        running_ = 0;
     }
-
-
-
-
-
-
-
-
-
-  free_detections(dets, nboxes);
-  demoIndex_ = (demoIndex_ + 1) % demoFrame_;
-  running_ = 0;
-
-
-
-
 
 
 

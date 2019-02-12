@@ -12,7 +12,7 @@ yolo_model:
       - bicycle
       - car
       - motorbike
-      - aeroplane
+      - airplane
       - bus
       - train
       - truck
