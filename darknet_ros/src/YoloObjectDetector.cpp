@@ -6,6 +6,14 @@
  *   Institute: ETH Zurich, Robotic Systems Lab
  */
 
+
+//for publish Images
+#include <image_transport/image_transport.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <cstdlib>
+
+
 //lib for Ros pblish
 
 #include "ros/ros.h"
@@ -138,6 +146,7 @@ head->next->next = NULL;
 
 */
 int counterVar = 0;
+std::string const HOME = std::getenv("HOME") ? std::getenv("HOME") : ".";
 
 namespace darknet_ros {
 
@@ -282,7 +291,8 @@ void YoloObjectDetector::init()
                                                            objectDetectorQueueSize,
                                                            objectDetectorLatch);
 /// Jonas added/ changed line
-    JonasObjektspamer_pub_ = nodeHandle_.advertise<std_msgs::String>("JonasObjektspamer", 1000);
+
+JonasObjektspamer_pub_ = nodeHandle_.advertise<std_msgs::String>("JonasObjektspamer", 1000);
 ///
 
   boundingBoxesPublisher_ = nodeHandle_.advertise<darknet_ros_msgs::BoundingBoxes>(
@@ -304,14 +314,28 @@ void YoloObjectDetector::init()
   checkForObjectsActionServer_->start();
 }
 
+
+
 void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-  ROS_DEBUG("[YoloObjectDetector] USB image received.");
+// added to bypass ros_subscriber
+
+
+
+    cv::Mat image = cv::imread( "http://farm2.static.flickr.com/1029/3175021268_11a3e057bd.jpg", CV_LOAD_IMAGE_COLOR);
+   //cv::Mat image = cv::imread(HOME + "/img/b.png", CV_LOAD_IMAGE_COLOR);
+   sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
+
+
+   //
+
+
+    ROS_DEBUG("[YoloObjectDetector] USB image received.");
 
   cv_bridge::CvImagePtr cam_image;
 
   try {
-    cam_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
+    cam_image = cv_bridge::toCvCopy(msg2, sensor_msgs::image_encodings::BGR8);
   } catch (cv_bridge::Exception& e) {
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
@@ -320,7 +344,7 @@ void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg)
   if (cam_image) {
     {
       boost::unique_lock<boost::shared_mutex> lockImageCallback(mutexImageCallback_);
-      imageHeader_ = msg->header;
+      imageHeader_ = msg2->header;
       camImageCopy_ = cam_image->image.clone();
     }
     {
@@ -913,6 +937,7 @@ if (dets[i].prob[j] > demoThresh_){
     if ( counterVar >= 3 ) {
 
 
+
         /*
 
              std::cout << "mymap contains:\n";
@@ -932,14 +957,13 @@ if (dets[i].prob[j] > demoThresh_){
         */
 
 
-        for (auto &y: detectedObjects_) {
+        for (auto& y: detectedObjects_) {
             //  std::cout << y.first << ": " << y.second << '\n';
 
-            for (auto &x: detectedRooms_) {
+            for (auto& x: detectedRooms_) {
                 // std::cout << x.first << ": " << x.second << '\n';
 
-                std::string adreRelat =
-                        "http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+                std::string adreRelat = "http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
 
                 RestClient::init();
                 RestClient::Connection *connRelat = new RestClient::Connection(adreRelat);
@@ -962,8 +986,7 @@ if (dets[i].prob[j] > demoThresh_){
                 //  std::cout << valueRelat << '\n';
 
 
-                detectedRooms_[x.first] =
-                        std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first);
+                detectedRooms_[x.first] = std::stof(valueRelat) * detectedRooms_.at(x.first) * y.second + detectedRooms_.at(x.first);
 
 
             }
