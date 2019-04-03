@@ -30,7 +30,7 @@
 
 #include<stdio.h>
 #include<string.h>
-
+#include <unistd.h>
 
 
 #include <iostream>
@@ -39,6 +39,8 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <fstream>
+
 
 
 // for Json
@@ -53,6 +55,11 @@
 #include <jsoncpp/json/writer.h>
 #include <jsoncpp/json/value.h>
 #include <string>
+
+
+
+
+#include <experimental/filesystem>
 
 
 
@@ -146,7 +153,52 @@ head->next->next = NULL;
 
 */
 int counterVar = 0;
+int ImageIndex = 0;
+int ImageIndexCallA = 0;
+int ImageIndexCallB = 0;
+int ImageRead = 0;
+
+using namespace std;
+
+
+
+
+std::vector<std::string>DataArray;
+
 std::string const HOME = std::getenv("HOME") ? std::getenv("HOME") : ".";
+
+
+
+
+/*
+#include <boost/filesystem.hpp>
+
+struct path_leaf_string
+{
+    std::string operator()(const boost::filesystem::directory_entry& entry) const
+    {
+        return entry.path().leaf().string();
+    }
+};
+
+void read_directory(const std::string& name, stringvec& v)
+{
+    boost::filesystem::path p(name);
+    boost::filesystem::directory_iterator start(p);
+    boost::filesystem::directory_iterator end;
+    std::transform(start, end, std::back_inserter(v), path_leaf_string());
+}
+
+std::vector<std::string> v;
+
+read_directory(HOME + "/Downloads/Bathroom", v);
+std::copy(v.begin(), v.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
+
+
+
+
+*/
+
 
 namespace darknet_ros {
 
@@ -210,6 +262,9 @@ bool YoloObjectDetector::readParameters()
 
 void YoloObjectDetector::init()
 {
+
+
+
   ROS_INFO("[YoloObjectDetector] init().");
 
   // Initialize deep network of darknet.
@@ -316,14 +371,40 @@ JonasObjektspamer_pub_ = nodeHandle_.advertise<std_msgs::String>("JonasObjektspa
 
 
 
-void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg)
+void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg )
 {
 // added to bypass ros_subscriber
 
 
 
-    cv::Mat image = cv::imread( "http://farm2.static.flickr.com/1029/3175021268_11a3e057bd.jpg", CV_LOAD_IMAGE_COLOR);
-   //cv::Mat image = cv::imread(HOME + "/img/b.png", CV_LOAD_IMAGE_COLOR);
+
+    if ( ImageRead == 0 )
+    {
+    std::ifstream file(HOME + "/Downloads/Bathroom/Names.txt");
+    std::string str2;
+        while (std::getline(file, str2))
+        {
+            DataArray.push_back(str2);
+            std::cout << str2 << std::endl;
+
+        }
+
+    }
+
+    ImageRead = 1;
+
+
+if (ImageIndexCallA == 0)
+{
+        cv::Mat image = cv::imread(HOME + "/Downloads/Bathroom/" + DataArray[3], CV_LOAD_IMAGE_COLOR);
+
+
+    if (image.data == NULL)
+    {
+        std::cout << "blaaaaaa +++++++++++++++++++ " << std::endl;
+    }
+
+
    sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
 
 
@@ -341,7 +422,7 @@ void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg)
     return;
   }
 
-  if (cam_image) {
+  if (cam_image ) {
     {
       boost::unique_lock<boost::shared_mutex> lockImageCallback(mutexImageCallback_);
       imageHeader_ = msg2->header;
@@ -353,7 +434,12 @@ void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg)
     }
     frameWidth_ = cam_image->image.size().width;
     frameHeight_ = cam_image->image.size().height;
+      ImageIndexCallA ++;
   }
+
+}
+
+
   return;
 }
 
@@ -390,7 +476,11 @@ void YoloObjectDetector::checkForObjectsActionGoalCB()
     frameWidth_ = cam_image->image.size().width;
     frameHeight_ = cam_image->image.size().height;
   }
-  return;
+
+
+
+
+    return;
 }
 
 void YoloObjectDetector::checkForObjectsActionPreemptCB()
@@ -930,13 +1020,26 @@ if (dets[i].prob[j] > demoThresh_){
   }
 
 
+/*
 
-    counterVar ++;
-
-
+    unsigned int microseconds;
+    microseconds = 3000;
+    usleep(microseconds);
+*/
+    counterVar++;
     if ( counterVar >= 3 ) {
 
+        ImageIndexCallB = 1;
 
+        if ( ImageIndexCallA >= 1 and ImageIndexCallB >= 1 ) {
+
+            std::cout << ImageIndex << '\n';
+            ImageIndex ++;
+            ImageIndexCallA = 0;
+            ImageIndexCallB = 0;
+
+
+        }
 
         /*
 
@@ -1098,6 +1201,22 @@ if (dets[i].prob[j] > demoThresh_){
 
             //   rooms = rooms + element.first + "_" + element.second + " ;;; ";
         }
+
+        std::cout << setOfWords[8].first << std::endl;
+
+
+        ofstream myfile;
+        myfile.open (HOME + "/Downloads/Bathroom/result.txt", ios::app);
+        if ( setOfWords[8].second == 100 )
+        {
+        myfile << DataArray[ImageIndex] << ":" << ImageIndex << ":" << "no object found " << std::endl;
+        }
+        else
+        {
+            myfile << DataArray[ImageIndex] << ":" << ImageIndex << ":" << setOfWords[8].first << std::endl;
+        }
+        myfile.close();
+
 
         rooms = setOfWords.back().first;
 
