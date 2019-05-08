@@ -157,13 +157,12 @@ int ImageIndex = 0;
 int ImageIndexCallA = 0;
 int ImageIndexCallB = 0;
 int ImageRead = 0;
+int ImageCount = 0;
 
 using namespace std;
 
-
-
-
 std::vector<std::string>DataArray;
+
 
 std::string const HOME = std::getenv("HOME") ? std::getenv("HOME") : ".";
 
@@ -371,11 +370,10 @@ JonasObjektspamer_pub_ = nodeHandle_.advertise<std_msgs::String>("JonasObjektspa
 
 
 
+
 void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg )
 {
 // added to bypass ros_subscriber
-
-
 
 
     if ( ImageRead == 0 )
@@ -386,7 +384,7 @@ void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg )
         {
             DataArray.push_back(str2);
             std::cout << str2 << std::endl;
-
+            ImageCount ++;
         }
 
     }
@@ -394,10 +392,15 @@ void YoloObjectDetector::cameraCallback(const sensor_msgs::ImageConstPtr& msg )
     ImageRead = 1;
 
 
+
+
+
+
 if (ImageIndexCallA == 0)
 {
-        cv::Mat image = cv::imread(HOME + "/Downloads/Bathroom/" + DataArray[3], CV_LOAD_IMAGE_COLOR);
+        cv::Mat image = cv::imread(HOME + "/Downloads/Bathroom/" + DataArray[ImageIndex], CV_LOAD_IMAGE_COLOR);
 
+  //  imwrite( HOME + "/Downloads/Bathroom/test/"+ "test1" + DataArray[ImageIndex] , image );
 
     if (image.data == NULL)
     {
@@ -417,15 +420,20 @@ if (ImageIndexCallA == 0)
 
   try {
     cam_image = cv_bridge::toCvCopy(msg2, sensor_msgs::image_encodings::BGR8);
+      //    cam_image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
   } catch (cv_bridge::Exception& e) {
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
 
+
+
+
   if (cam_image ) {
     {
       boost::unique_lock<boost::shared_mutex> lockImageCallback(mutexImageCallback_);
-      imageHeader_ = msg2->header;
+     imageHeader_ = msg2->header;
+        //   imageHeader_ = msg->header;
       camImageCopy_ = cam_image->image.clone();
     }
     {
@@ -451,19 +459,31 @@ void YoloObjectDetector::checkForObjectsActionGoalCB()
       checkForObjectsActionServer_->acceptNewGoal();
   sensor_msgs::Image imageAction = imageActionPtr->image;
 
+
+
+
+
   cv_bridge::CvImagePtr cam_image;
+
+
 
   try {
     cam_image = cv_bridge::toCvCopy(imageAction, sensor_msgs::image_encodings::BGR8);
+      std::cout << "Möööp++++++++++try+++++++++ " << std::endl;
   } catch (cv_bridge::Exception& e) {
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
 
+
+
+
   if (cam_image) {
     {
       boost::unique_lock<boost::shared_mutex> lockImageCallback(mutexImageCallback_);
       camImageCopy_ = cam_image->image.clone();
+        std::cout << "Möööp+++++++++++++++++++ " << std::endl;
+//        imwrite( HOME + "/Downloads/Bathroom/test/"+ "testcamimage" + DataArray[3] , cam_image->image );
     }
     {
       boost::unique_lock<boost::shared_mutex> lockImageCallback(mutexActionStatus_);
@@ -583,6 +603,7 @@ void *YoloObjectDetector::detectInThread()
 {
 
     std::cout << initVarRooms_ << '\n';
+    std::cout << counterVar << '\n';
     if (initVarRooms_ == 0 )
     {
 
@@ -656,6 +677,7 @@ void *YoloObjectDetector::detectInThread()
         //  std::cout << valueRooms << '\n';
 
     }
+
 
 
 
@@ -1031,15 +1053,7 @@ if (dets[i].prob[j] > demoThresh_){
 
         ImageIndexCallB = 1;
 
-        if ( ImageIndexCallA >= 1 and ImageIndexCallB >= 1 ) {
 
-            std::cout << ImageIndex << '\n';
-            ImageIndex ++;
-            ImageIndexCallA = 0;
-            ImageIndexCallB = 0;
-
-
-        }
 
         /*
 
@@ -1241,6 +1255,17 @@ if (dets[i].prob[j] > demoThresh_){
         free_detections(dets, nboxes);
         demoIndex_ = (demoIndex_ + 1) % demoFrame_;
         running_ = 0;
+
+        if ( ImageIndexCallA >= 1 and ImageIndexCallB >= 1 ) {
+
+            std::cout << ImageIndex << '\n';
+
+            ImageIndexCallA = 0;
+            ImageIndexCallB = 0;
+            ImageIndex ++;
+
+        }
+
     }
 
 
@@ -1359,6 +1384,8 @@ void YoloObjectDetector::yolo()
 
   IplImageWithHeader_ imageAndHeader = getIplImageWithHeader();
   IplImage* ROS_img = imageAndHeader.image;
+
+
   buff_[0] = ipl_to_image(ROS_img);
   buff_[1] = copy_image(buff_[0]);
   buff_[2] = copy_image(buff_[0]);
@@ -1368,7 +1395,12 @@ void YoloObjectDetector::yolo()
   buffLetter_[0] = letterbox_image(buff_[0], net_->w, net_->h);
   buffLetter_[1] = letterbox_image(buff_[0], net_->w, net_->h);
   buffLetter_[2] = letterbox_image(buff_[0], net_->w, net_->h);
+
+
   ipl_ = cvCreateImage(cvSize(buff_[0].w, buff_[0].h), IPL_DEPTH_8U, buff_[0].c);
+
+
+
 
   int count = 0;
 
@@ -1416,6 +1448,7 @@ IplImageWithHeader_ YoloObjectDetector::getIplImageWithHeader()
   boost::shared_lock<boost::shared_mutex> lock(mutexImageCallback_);
   IplImage* ROS_img = new IplImage(camImageCopy_);
   IplImageWithHeader_ header = {.image = ROS_img, .header = imageHeader_};
+    imwrite( HOME + "/Downloads/Bathroom/test/"+ "testIPL" + DataArray[ImageIndex] , camImageCopy_);
   return header;
 }
 
@@ -1433,8 +1466,11 @@ bool YoloObjectDetector::isNodeRunning(void)
 
 void *YoloObjectDetector::publishInThread()
 {
+    std::string sImageIndex = std::to_string(ImageIndex);
+
   // Publish image.
   cv::Mat cvImage = cv::cvarrToMat(ipl_);
+    imwrite( HOME + "/Downloads/Bathroom/test/"+ "testCVImage" + DataArray[ImageIndex] + "___" + sImageIndex, cvImage );
   if (!publishDetectionImage(cv::Mat(cvImage))) {
     ROS_DEBUG("Detection image has not been broadcasted.");
   }

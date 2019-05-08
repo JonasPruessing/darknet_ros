@@ -10,6 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4723d21-fcb8-492d-bfaa-094b319d53a2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darknet" beforeDir="false" afterPath="$PROJECT_DIR$/darknet" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darknet/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/darknet/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp" afterDir="false" />
@@ -21,12 +22,39 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="401" column="27" lean-forward="true" selection-start-line="401" selection-start-column="27" selection-end-line="401" selection-end-column="27" />
+            <state relative-caret-position="-1710">
+              <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/darknet_ros/include/darknet_ros/YoloObjectDetector.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2340">
+              <caret line="156" column="40" selection-start-line="156" selection-start-column="40" selection-end-line="156" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/darknet_ros/launch/darknet_ros.launch">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="22" selection-start-line="22" selection-end-line="22" />
             </state>
           </provider>
         </entry>
@@ -35,19 +63,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>namespace</find>
-      <find>cout</find>
-      <find>ImageInde</find>
-      <find>index</find>
-      <find>microsec</find>
-      <find>imageind</find>
-      <find>callba</find>
-      <find>imageindex</find>
-      <find>error</find>
+      <find>detectionIma</find>
+      <find>load</find>
+      <find>imwr</find>
+      <find>camImageCopy_</find>
+      <find>ipl_</find>
+      <find>ipl_to</find>
       <find>ipl</find>
+      <find>index</find>
+      <find>imread</find>
+      <find>ima</find>
+      <find>imagerea</find>
+      <find>home</find>
+      <find>ImageConstPtr&amp;</find>
+      <find>cameraQueueSize</find>
+      <find>sensor_msgs</find>
+      <find>frameWidth_</find>
+      <find>imageptr</find>
+      <find>3</find>
       <find>msg</find>
-      <find>dataa</find>
+      <find>imageIndex</find>
+      <find>cameraTop</find>
+      <find>publish</find>
+      <find>dataar</find>
+      <find>ros::ini</find>
+      <find>imageind</find>
+      <find>counter</find>
+      <find>initVarr</find>
       <find>imageinde</find>
+      <find>result</find>
+      <find>ros::</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -56,6 +101,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp" />
+        <option value="$PROJECT_DIR$/darknet_ros/include/darknet_ros/YoloObjectDetector.h" />
         <option value="$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp" />
       </list>
     </option>
@@ -72,7 +119,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -83,6 +129,24 @@
             <path>
               <item name="darknet_ros" type="b2602c69:ProjectViewProjectNode" />
               <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="darknet" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="darknet_ros" type="b2602c69:ProjectViewProjectNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="darknet_ros" type="b2602c69:ProjectViewProjectNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="darknet_ros" type="b2602c69:ProjectViewProjectNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
               <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -91,10 +155,17 @@
               <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="darknet_ros" type="b2602c69:ProjectViewProjectNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="darknet_ros" type="462c0819:PsiDirectoryNode" />
+              <item name="yolo_network_config" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -125,45 +196,110 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1553720686902</updated>
-      <workItem from="1553720688704" duration="28801000" />
+      <workItem from="1553720688704" duration="42029000" />
+      <workItem from="1556292579945" duration="21579000" />
+      <workItem from="1557328037242" duration="3256000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28801000" />
+    <option name="totallyTimeSpent" value="66864000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1175" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15716657" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1610404" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3298279" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Database Changes" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/darknet_ros/src/yolo_object_detector_node_aktive.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/src/image_interface.c">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros_msgs/action/CheckForObjects.action">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros_msgs/msg/BoundingBox.msg">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros_msgs/msg/BoundingBoxes.msg">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet/src/box.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet/src/classifier.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet/src/convolutional_layer.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet/src/data.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1260" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/include/darknet_ros/image_interface.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/launch/yolo_v3.launch">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/src/yolo_object_detector_node.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="1" lean-forward="true" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/include/darknet_ros/YoloObjectDetector.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2340">
+          <caret line="156" column="40" selection-start-line="156" selection-start-column="40" selection-end-line="156" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/darknet_ros/launch/darknet_ros.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="401" column="27" lean-forward="true" selection-start-line="401" selection-start-column="27" selection-end-line="401" selection-end-column="27" />
+        <state relative-caret-position="-1710">
+          <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
         </state>
       </provider>
     </entry>
