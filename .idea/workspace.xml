@@ -23,20 +23,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
+            <state relative-caret-position="889">
+              <caret line="103" lean-forward="true" selection-start-line="103" selection-end-line="103" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1710">
-              <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
+            <state relative-caret-position="950">
+              <caret line="1288" column="11" lean-forward="true" selection-start-line="1288" selection-start-column="11" selection-end-line="1288" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -63,13 +63,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>detectionIma</find>
-      <find>load</find>
-      <find>imwr</find>
-      <find>camImageCopy_</find>
-      <find>ipl_</find>
-      <find>ipl_to</find>
-      <find>ipl</find>
       <find>index</find>
       <find>imread</find>
       <find>ima</find>
@@ -93,6 +86,13 @@
       <find>imageinde</find>
       <find>result</find>
       <find>ros::</find>
+      <find>ImageIndexCallA</find>
+      <find>ImageIndex</find>
+      <find>cvWaitKey</find>
+      <find>waitKeyDelay_</find>
+      <find>mill</find>
+      <find>wait</find>
+      <find>result.txt</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -101,9 +101,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp" />
         <option value="$PROJECT_DIR$/darknet_ros/include/darknet_ros/YoloObjectDetector.h" />
         <option value="$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp" />
+        <option value="$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp" />
       </list>
     </option>
   </component>
@@ -170,7 +170,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -198,18 +198,20 @@
       <updated>1553720686902</updated>
       <workItem from="1553720688704" duration="42029000" />
       <workItem from="1556292579945" duration="21579000" />
-      <workItem from="1557328037242" duration="3256000" />
+      <workItem from="1557328037242" duration="3261000" />
+      <workItem from="1557418212715" duration="1928000" />
+      <workItem from="1557510373985" duration="8690000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66864000" />
+    <option name="totallyTimeSpent" value="77487000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1175" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1610404" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16436082" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -275,13 +277,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/darknet_ros/include/darknet_ros/YoloObjectDetector.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2340">
@@ -298,8 +293,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/darknet_ros/src/YoloObjectDetector.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1710">
-          <caret line="57" lean-forward="true" selection-start-line="57" selection-end-line="57" />
+        <state relative-caret-position="950">
+          <caret line="1288" column="11" lean-forward="true" selection-start-line="1288" selection-start-column="11" selection-end-line="1288" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/image_transport_ws/src/image_transport_tutorial/src/my_publisher.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="889">
+          <caret line="103" lean-forward="true" selection-start-line="103" selection-end-line="103" />
         </state>
       </provider>
     </entry>

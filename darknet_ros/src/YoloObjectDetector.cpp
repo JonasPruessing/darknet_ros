@@ -154,7 +154,8 @@ head->next->next = NULL;
 */
 int counterVar = 0;
 int ImageIndex = 0;
-int ImageIndexCallA = 0;
+int ImageIndexCallA;
+int ImageWriteIndex = 0;
 int ImageIndexCallB = 0;
 int ImageRead = 0;
 int ImageCount = 0;
@@ -1080,7 +1081,13 @@ if (dets[i].prob[j] > demoThresh_){
             for (auto& x: detectedRooms_) {
                 // std::cout << x.first << ": " << x.second << '\n';
 
-                std::string adreRelat = "http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+
+                //++++++++++++++++++++++++++++++++++++ Global CN5 ++++++++++++++++++++++++++++++++
+                //std::string adreRelat = "http://api.conceptnet.io/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+                //++++++++++++++++++++++++++++++++++++ Global CN5 ++++++++++++++++++++++++++++++++
+
+                std::string adreRelat = "http://api.localhost:8084/relatedness?node1=/c/en/" + y.first + "&node2=/c/en/" + x.first;
+
 
                 RestClient::init();
                 RestClient::Connection *connRelat = new RestClient::Connection(adreRelat);
@@ -1129,7 +1136,13 @@ if (dets[i].prob[j] > demoThresh_){
 
 //++++++++++++++++++++++++++++++++++++ Action Detection ++++++++++++++++++++++++++++++++
 
-            std::string adreObject = "http://api.conceptnet.io/c/en/" + x.first + "?offset=0&limit=1000";
+
+//++++++++++++++++++++++++++++++++++++ Global CN5 ++++++++++++++++++++++++++++++++
+//  std::string adreObject = "http://api.conceptnet.io/c/en/" + x.first + "?offset=0&limit=1000";
+//++++++++++++++++++++++++++++++++++++ Global CN5 ++++++++++++++++++++++++++++++++
+
+            std::string adreObject = "http://api.localhost:8084/c/en/" + x.first + "?offset=0&limit=1000";
+
 
 
             RestClient::init();
@@ -1219,6 +1232,8 @@ if (dets[i].prob[j] > demoThresh_){
         std::cout << setOfWords[8].first << std::endl;
 
 
+        if ( ImageWriteIndex == 1)
+        {
         ofstream myfile;
         myfile.open (HOME + "/Downloads/Bathroom/result.txt", ios::app);
         if ( setOfWords[8].second == 100 )
@@ -1231,7 +1246,8 @@ if (dets[i].prob[j] > demoThresh_){
         }
         myfile.close();
 
-
+        }
+        ImageWriteIndex ++;
         rooms = setOfWords.back().first;
 
 
@@ -1256,13 +1272,13 @@ if (dets[i].prob[j] > demoThresh_){
         demoIndex_ = (demoIndex_ + 1) % demoFrame_;
         running_ = 0;
 
-        if ( ImageIndexCallA >= 1 and ImageIndexCallB >= 1 ) {
+        if ( ImageIndexCallA >= 1 and ImageIndexCallB >= 1 and ImageWriteIndex >= 1 ) {
 
             std::cout << ImageIndex << '\n';
-
+            ImageIndex ++;
             ImageIndexCallA = 0;
             ImageIndexCallB = 0;
-            ImageIndex ++;
+            ImageWriteIndex = 0;
 
         }
 
@@ -1302,6 +1318,7 @@ void *YoloObjectDetector::displayInThread(void *ptr)
 {
   show_image_cv(buff_[(buffIndex_ + 1)%3], "YOLO V3", ipl_);
   int c = cvWaitKey(waitKeyDelay_);
+  if (c != -1) c = c%256;
   if (c != -1) c = c%256;
   if (c == 27) {
       demoDone_ = 1;
